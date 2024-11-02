@@ -1,0 +1,183 @@
+<section class="container-fluid">
+    <mat-card class="mat-elevation-z8">
+        <mat-card-header class="elevation-z8 d-flex flex-column">
+            <h3 class="fs-3 text-warn" *ngIf="WalletDID">
+                Your Wallet Address: 
+                <div class="p-1 text-info text-break text-wrap fs-5" [contentEditable]="true">{{ WalletDID }}</div>
+            </h3>
+
+            <mat-divider></mat-divider>
+  
+            <h3 class="fs-3 text-warn" *ngIf="EntityDID">
+                Your Entity DID: 
+                <div class="p-1 text-success text-break text-wrap fs-5" [contentEditable]="true">{{ EntityDID }}</div>
+            </h3>
+        </mat-card-header>
+
+        <div class="modal" id="verifyVCModal" tabindex="-1" aria-labelledby="verifyVCModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h4 class="fs-5 fw-bold text-success modal-title" id="verifyVCModalLabel">Verify Credential</h4>
+                </div>
+                <div class="modal-body">
+                  <div class="fs-6 font-monospace text-break text-wrap" [contentEditable]="true">{{ VC }}</div>
+
+                  <mat-divider></mat-divider>
+
+                  <form [formGroup]="claimDataForm" class="mat-elevation-z4 centered form col-lg-4 col-md-12 col-sm-12"
+                  enctype="application/x-www-form-url-encoded">
+                  <mat-form-field appearance="fill" class="p-1  form-control">
+                    <mat-label>Verifiable Credential</mat-label>
+                    <mat-icon matPrefix class="material-symbols-outlined">info</mat-icon>
+                    <mat-hint align="end">Verifiable Credential</mat-hint>
+                    <textarea matInput cdkTextareaAutosize #autosize="cdkTextareaAutosize" cdkAutosizeMinRows="auto"
+                      cdkAutosizeMaxRows="auto" formControlName="vc" [(ngModel)]="VC">{{ VC }}
+                    </textarea>
+                  </mat-form-field>
+
+                  <mat-form-field appearance="fill" class="p-1  form-control">
+                    <mat-label>Claim Data</mat-label>
+                    <mat-icon matPrefix class="material-symbols-outlined">info</mat-icon>
+                    <mat-hint align="end">Verifiable Claim Data</mat-hint>
+                    <textarea matInput cdkTextareaAutosize #autosize="cdkTextareaAutosize" cdkAutosizeMinRows="auto"
+                      cdkAutosizeMaxRows="auto" formControlName="claimData">{
+                        name: "John Doe",
+                        email: "johndoe@gmail.com",
+                        country: "Kenya",
+                        city: "Nairobi"
+                      }
+                    </textarea>
+                  </mat-form-field>
+                  </form>
+                  
+                </div>
+                <mat-divider></mat-divider>
+                <div class="modal-footer" *ngIf="VC">
+                  <button mat-raised-button color="warn" (click)="VerifyVC()">
+                    <mat-icon class="material-symbols-outlined">send</mat-icon>
+                    Verify Credential
+                  </button>
+                </div>
+                <div class="modal-footer">
+                  <button mat-icon-button  color="warn" type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <mat-icon class="material-symbols-outlined">close</mat-icon>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        
+
+        <mat-divider></mat-divider>
+        <mat-card-content *ngIf="VCs">
+          <div class="modal" id="VCModal" tabindex="-1" aria-labelledby="VCModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="fs-5 fw-bold text-success modal-title" id="VCModalLabel">Verifiable Credential</h5>
+                </div>
+                <div class="modal-body">
+                  <div class="fs-6 font-monospace text-break text-wrap" [contentEditable]="true">{{ VC  }}</div>
+                </div>
+                <div class="modal-footer">
+                  <button mat-icon-button  color="warn" type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <mat-icon class="material-symbols-outlined">close</mat-icon>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <mat-accordion class="mat-elevation-z2">
+            <mat-expansion-panel class="mat-elevation-z8" *ngFor="let vc of VCs">
+              <mat-expansion-panel-header>
+                <mat-panel-title *ngFor="let label of vc.MetaData.Labels | keyvalue ">{{ label.key  }} </mat-panel-title>
+              </mat-expansion-panel-header>
+              <ul class="list-group">
+                <li class="list-group-item">
+                  <h5 class="fs-5 fw-bold">
+                    CredentialDID:  
+                    <div class="fs-6 fw-bold text-success text-break text-wrap" [contentEditable]="true">
+                      {{ vc.CredentialDid }}                      
+                    </div>
+                  </h5>
+                </li>
+                <li class="list-group-item">
+                  <h5 class="fs-5 fw-bold">
+                    CreatedAt:  
+                    <span class="fs-6 text-success">
+                      {{ vc.Created | date }}
+                    </span>
+                  </h5>
+                </li>
+                <li class="list-group-item">
+                  <h5 class="fs-5 fw-bold">
+                    WalletDID:   
+                    <div class="fs-6 text-danger text-break text-wrap" [contentEditable]="true">
+                      {{ vc.WalletDid }}
+                    </div> 
+                  </h5>
+                </li>
+                <li class="list-group-item">
+                  <h5 class="fs-5 fw-bold">
+                    EntityDID:    
+                    <div class="fs-6 text-secondary text-break text-wrap" [contentEditable]="true">
+                      {{ vc.EntityDid }}
+                    </div>
+                  </h5>
+                </li>
+                <li class="list-group-item">
+                  <h5 class="fs-5 fw-bold">
+                    JsonLD:    
+                    <div class="fs-6 text-info text-break text-wrap" [contentEditable]="true">
+                      {{ vc.JsonLd }}
+                    </div>
+                  </h5>
+                </li>
+                <li class="list-group-item">
+                  <h5 class="fs-5 fw-bold">
+                    State:   
+                    <span class="fs-6 text-danger text-break text-wrap">
+                      {{ vc.State }}
+                    </span> 
+                  </h5>
+                </li>
+                <li class="list-group-item">
+                  <h5 class="fs-5 fw-bold">
+                    Revision:   
+                    <span class="fs-6 text-danger text-break text-wrap">
+                      {{ vc.Revision }}
+                    </span> 
+                  </h5>
+                </li>
+              </ul>
+              <button mat-raised-button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#VCModal" (click)="GetVC(vc)">
+                <mat-icon class="material-symbols-outlined">visibility</mat-icon>
+                View Credential
+              </button>
+
+
+              <button mat-raised-button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#verifyVCModal" (click)="startVCVerification(vc)" color="accent">
+                <mat-icon class="material-symbols-outlined">verified_user</mat-icon>
+                Verify Credential
+              </button>              
+
+              <button mat-raised-button color="warn" (click)=DeleteVC(vc)>
+                <mat-icon class="material-symbols-outlined">delete</mat-icon>
+                Delete Credential
+              </button>
+            </mat-expansion-panel>
+          </mat-accordion>
+        </mat-card-content>
+
+
+
+        <mat-card-content>
+
+        </mat-card-content>
+
+        <mat-divider></mat-divider>
+    </mat-card>
+</section>

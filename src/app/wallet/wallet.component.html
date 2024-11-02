@@ -1,0 +1,490 @@
+<section class="mat-elevation-z8 bg-white col-lg-2 col-md-12 col-sm-12">
+
+    <mat-card class="mat-elevation-z8">
+        
+        <mat-card-header class="elevation-z8 d-flex flex-column">
+            <h3 class="fs-3 text-warn" *ngIf="WalletDID">
+                Your Wallet Address: 
+                <div class="p-1 text-info text-break text-wrap fs-5" [contentEditable]="true">{{ WalletDID }}</div>
+            </h3>
+
+            <mat-divider></mat-divider>
+  
+            <h3 class="fs-3 text-warn" *ngIf="EntityDID">
+                Your Entity DID: 
+                <div class="p-1 text-success  text-break text-wrap fs-5" [contentEditable]="true">{{ EntityDID }}</div>
+            </h3>
+        </mat-card-header>
+
+        <mat-divider></mat-divider>
+        <mat-card-content *ngIf="VCs">
+          <div class="modal" id="VCModal" tabindex="-1" aria-labelledby="VCModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="fs-5 fw-bold text-success modal-title" id="VCModalLabel">Verifiable Credential</h5>
+                </div>
+                <div class="modal-body">
+                  <div class="fs-6 font-monospace text-break text-wrap" [contentEditable]="true">{{ VC  }}</div>
+                </div>
+                <div class="modal-footer">
+                  <button mat-icon-button  color="warn" type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    <mat-icon class="material-symbols-outlined">close</mat-icon>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <mat-accordion class="mat-elevation-z2">
+            <mat-expansion-panel class="mat-elevation-z8" *ngFor="let vc of VCs">
+              <mat-expansion-panel-header>
+                <mat-panel-title *ngFor="let label of vc.MetaData.Labels | keyvalue ">{{ label.key  }} </mat-panel-title>
+              </mat-expansion-panel-header>
+              <ul class="list-group">
+                <li class="list-group-item">
+                  <h5 class="fs-5 fw-bold">
+                    CredentialDID:  
+                    <span class="fs-6 fw-bold text-success text-break text-wrap">
+                      {{ vc.CredentialDid }}
+                    </span>
+                  </h5>
+                </li>
+                <li class="list-group-item">
+                  <h5 class="fs-5 fw-bold">
+                    CreatedAt:  
+                    <span class="fs-6 text-success">
+                      {{ vc.Created | date }}
+                    </span>
+                  </h5>
+                </li>
+                <li class="list-group-item">
+                  <h5 class="fs-5 fw-bold">
+                    WalletDID:   
+                    <span class="fs-6 text-danger text-break text-wrap">
+                      {{ vc.WalletDid }}
+                    </span> 
+                  </h5>
+                </li>
+                <li class="list-group-item">
+                  <h5 class="fs-5 fw-bold">
+                    EntityDID:    
+                    <span class="fs-6 text-secondary text-break text-wrap">
+                      {{ vc.EntityDid }}
+                    </span>
+                  </h5>
+                </li>
+                <li class="list-group-item">
+                  <h5 class="fs-5 fw-bold">
+                    JsonLD:    
+                    <span class="fs-6 text-info text-break text-wrap text-break text-wrap">
+                      {{ vc.JsonLd }}
+                    </span>
+                  </h5>
+                </li>
+                <li class="list-group-item">
+                  <h5 class="fs-5 fw-bold">
+                    State:   
+                    <span class="fs-6 text-danger text-break text-wrap">
+                      {{ vc.State }}
+                    </span> 
+                  </h5>
+                </li>
+                <li class="list-group-item">
+                  <h5 class="fs-5 fw-bold">
+                    Revision:   
+                    <span class="fs-6 text-danger text-break text-wrap">
+                      {{ vc.Revision }}
+                    </span> 
+                  </h5>
+                </li>
+              </ul>
+              <button mat-icon-button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#VCModal" (click)="GetVC(vc)">
+                <mat-icon class="material-symbols-outlined">visibility</mat-icon>
+              </button>
+
+              <button mat-icon-button color="warn" (click)=DeleteVC(vc)>
+                <mat-icon class="material-symbols-outlined">delete</mat-icon>
+              </button>
+            </mat-expansion-panel>
+          </mat-accordion>
+        </mat-card-content>
+
+        <mat-card-content>
+
+              <mat-stepper orientation="vertical" [linear]="true" #stepper class="mat-elevation-z8">
+
+                <mat-step [stepControl]="createWallet" *ngIf="!WalletDID">
+                    <form [formGroup]="createWallet">
+                      <ng-template matStepLabel>
+                        <mat-icon class="material-symbols-outlined">wallet</mat-icon>
+                        <h4 class="fs-4 fw-bold text-info">
+                          Create Wallet
+                        </h4>
+                      </ng-template>  
+                      <mat-divider></mat-divider>
+
+                      <mat-card-actions class="d-flex align-items-center p-4">
+                          <button mat-raised-button class="text-black p-2" color="tertiary" (click)="CreateWallet()" matStepperNext>
+                              <mat-icon class="material-symbols-outlined">wallet</mat-icon>
+                              Create  Wallet
+                          </button>
+  
+                      </mat-card-actions>
+                    </form>
+                  </mat-step>
+
+                <mat-step [stepControl]="employmentContract">
+                  <ng-template matStepLabel>
+                    <h4 class="fs-4 fw-bold text-info">
+                      Get Employment Offer Letter VC
+                    </h4>
+                  </ng-template>
+
+                  <mat-card-actions class="d-flex align-items-center p-4">
+                    <button mat-raised-button color="primary" (click)="GetEmploymentOfferLetterVC()" matStepperNext>
+                      <mat-icon class="material-symbols-outlined">policy</mat-icon>
+                      Get Employment Offer Letter VC
+                    </button>
+                
+                    <button mat-raised-button matStepperNext color="tertiary">
+                      <mat-icon class="material-symbols-outlined">last_page</mat-icon>
+                      Next
+                    </button>
+                
+                  </mat-card-actions>                
+                </mat-step>
+
+                <mat-step [stepControl]="applyForVisa">
+                  <form [formGroup]="applyForVisa">
+                    <ng-template matStepLabel>
+                      <h4 class="fs-4 fw-bold text-info">
+                        Amsterdam Visa Application
+                      </h4>
+                    </ng-template>
+                    <mat-form-field appearance="fill" class="p-1 form-control">
+                      <mat-label>Credit Report Document CID</mat-label>
+                      <mat-icon matPrefix class="material-symbols-outlined">info_outline</mat-icon>
+                      <mat-hint align="end">CID returned after selecting and uploading file</mat-hint>
+                      <input type="text" matInput formControlName="creditReportDocCID" [(ngModel)]="CreditReportDocCID"
+                        #creditReportDocCID>
+                
+                      <button mat-raised-button color="primary" class="p-1">
+                        Select to Upload File
+                        <mat-icon class="material-symbols-outlined">attachment</mat-icon>
+                        <input type="file" (change)="uploadCreditReportDoc($event)" accept="*" />
+                      </button>
+                      <button mat-raised-button color="warn" (click)="deleteFile(creditReportDocCID.value)">
+                        <mat-icon class="material-symbols-outlined">delete</mat-icon>
+                        Delete File
+                      </button>
+                    </mat-form-field>
+                    <div class="spacer"></div>
+                
+                    <mat-form-field appearance="fill" class="p-1 form-control">
+                      <mat-label>Identification Document (i.e Passport or ID)</mat-label>
+                      <mat-icon matPrefix class="material-symbols-outlined">info_outline</mat-icon>
+                      <mat-hint align="end">CID returned after selecting and uploading file</mat-hint>
+                      <input type="text" matInput formControlName="identificationDocCID" [(ngModel)]="IdentificationDocCID"
+                        #identificationDocCID>
+                
+                      <button mat-raised-button color="primary" class="p-1">
+                        Select to Upload File
+                        <mat-icon class="material-symbols-outlined">attachment</mat-icon>
+                        <input type="file" (change)="uploadIdentificationDoc($event)" accept="*" />
+                      </button>
+                      <button mat-raised-button color="warn" (click)="deleteFile(identificationDocCID.value)">
+                        <mat-icon class="material-symbols-outlined">delete</mat-icon>
+                        Delete File
+                      </button>
+                    </mat-form-field>
+                    <div class="spacer"></div>
+                
+                    <mat-form-field appearance="fill" class="p-1 form-control">
+                      <mat-label>Employment Contract</mat-label>
+                      <mat-icon matPrefix class="material-symbols-outlined">info_outline</mat-icon>
+                      <mat-hint align="end">CID returned after selecting and uploading file</mat-hint>
+                      <input type="text" matInput formControlName="employmentContractCID" [(ngModel)]="EmploymentContractDocCID"
+                        #employmentContractCID />
+                
+                      <button mat-raised-button color="primary" class="p-1">
+                        Select to Upload File
+                        <mat-icon class="material-symbols-outlined">attachment</mat-icon>
+                        <input type="file" (change)="uploadEmploymentContractDoc($event)" accept="*" />
+                      </button>
+                      <button mat-raised-button color="warn" (click)="deleteFile(employmentContractCID.value)">
+                        <mat-icon class="material-symbols-outlined">delete</mat-icon>
+                        Delete File
+                      </button>
+                    </mat-form-field>
+                    <div class="spacer"></div>
+                
+                  </form>
+
+                  <mat-card-actions>
+                    <button mat-raised-button matStepperPrevious color="tertiary">
+                      <mat-icon class="material-symbols-outlined">first_page</mat-icon>
+                      Back
+                    </button>
+
+                    <button color="primary" mat-raised-button matStepperNext (click)="VisaApplication()">
+                      <mat-icon class="material-symbols-outlined">enable</mat-icon>
+                      Apply For Visa
+                    </button>                      
+                  </mat-card-actions>
+                </mat-step>
+
+                <mat-step [stepControl]="municipalRegistration">
+                  <form [formGroup]="municipalRegistration">
+                    <ng-template matStepLabel>
+                      <h4 class="fs-4 fw-bold text-info">
+                        Register With Municipality
+                      </h4>
+                    </ng-template>
+                    <mat-form-field appearance="fill" class="p-1 form-control">
+                      <mat-label>Birth Record Document CID</mat-label>
+                      <mat-icon matPrefix class="material-symbols-outlined">info_outline</mat-icon>
+                      <mat-hint align="end">CID returned after selecting and uploading file</mat-hint>
+                      <input type="text" matInput formControlName="birthRecordDocCID" [(ngModel)]="BirthRecordDocCID"
+                        #birthRecordDocCID>
+                
+                      <button mat-raised-button color="primary" class="p-1">
+                        Select to Upload File
+                        <mat-icon class="material-symbols-outlined">attachment</mat-icon>
+                        <input type="file" (change)="uploadBirthRecordDoc($event)" accept="*" />
+                      </button>
+                      <button mat-raised-button color="warn" (click)="deleteFile(birthRecordDocCID.value)">
+                        <mat-icon class="material-symbols-outlined">delete</mat-icon>
+                        Delete File
+                      </button>
+                    </mat-form-field>
+                    <div class="spacer"></div>
+                
+                    <mat-form-field appearance="fill" class="p-1 form-control">
+                      <mat-label>Identification Document (i.e Passport or ID)</mat-label>
+                      <mat-icon matPrefix class="material-symbols-outlined">info_outline</mat-icon>
+                      <mat-hint align="end">CID returned after selecting and uploading file</mat-hint>
+                      <input type="text" matInput formControlName="identificationDocCID" [(ngModel)]="IdentificationDocCID"
+                        #identificationDocCID>
+                
+                      <button mat-raised-button color="primary" class="p-1">
+                        Select to Upload File
+                        <mat-icon class="material-symbols-outlined">attachment</mat-icon>
+                        <input type="file" (change)="uploadIdentificationDoc($event)" accept="*" />
+                      </button>
+                      <button mat-raised-button color="warn" (click)="deleteFile(identificationDocCID.value)">
+                        <mat-icon class="material-symbols-outlined">delete</mat-icon>
+                        Delete File
+                      </button>
+                    </mat-form-field>
+                    <div class="spacer"></div>
+                
+                    <mat-form-field appearance="fill" class="p-1 form-control">
+                      <mat-label>Employment Contract</mat-label>
+                      <mat-icon matPrefix class="material-symbols-outlined">info_outline</mat-icon>
+                      <mat-hint align="end">CID returned after selecting and uploading file</mat-hint>
+                      <input type="text" matInput formControlName="employmentContractCID" [(ngModel)]="EmploymentContractDocCID"
+                        #employmentContractCID />
+                
+                      <button mat-raised-button color="primary" class="p-1">
+                        Select to Upload File
+                        <mat-icon class="material-symbols-outlined">attachment</mat-icon>
+                        <input type="file" (change)="uploadEmploymentContractDoc($event)" accept="*" />
+                      </button>
+                      <button mat-raised-button color="warn" (click)="deleteFile(employmentContractCID.value)">
+                        <mat-icon class="material-symbols-outlined">delete</mat-icon>
+                        Delete File
+                      </button>
+                    </mat-form-field>
+                    <div class="spacer"></div>
+                
+                  </form>
+
+                  <mat-card-actions>
+                    <button mat-raised-button matStepperPrevious color="tertiary">
+                      <mat-icon class="material-symbols-outlined">first_page</mat-icon>
+                      Back
+                    </button>
+
+                    <button color="primary" mat-raised-button matStepperNext (click)="MunicipalRegistration()">
+                      <mat-icon class="material-symbols-outlined">enable</mat-icon>
+                      Apply With Municipality 
+                    </button>                      
+                  </mat-card-actions>
+                </mat-step>
+
+                <mat-step [stepControl]="openbankAccount">
+                  <form [formGroup]="openbankAccount">
+                    <ng-template matStepLabel>
+                      <h4 class="fs-4 fw-bold text-info">
+                        Open Bank Account
+                      </h4>
+                    </ng-template>
+                    <mat-form-field appearance="fill" class="p-1 form-control">
+                      <mat-label>Municipal Registration Document CID</mat-label>
+                      <mat-icon matPrefix class="material-symbols-outlined">info_outline</mat-icon>
+                      <mat-hint align="end">CID returned after selecting and uploading file</mat-hint>
+                      <input type="text" matInput formControlName="municipalRegDocCID" [(ngModel)]="MunicipalRegDocCID"
+                        #municipalRegDocCID>
+                
+                      <button mat-raised-button color="primary" class="p-1">
+                        Select to Upload File
+                        <mat-icon class="material-symbols-outlined">attachment</mat-icon>
+                        <input type="file" (change)="uploadMunicipalRegDoc($event)" accept="*" />
+                      </button>
+                      <button mat-raised-button color="warn" (click)="deleteFile(municipalRegDocCID.value)">
+                        <mat-icon class="material-symbols-outlined">delete</mat-icon>
+                        Delete File
+                      </button>
+                    </mat-form-field>
+                    <div class="spacer"></div>
+                
+                    <mat-form-field appearance="fill" class="p-1 form-control">
+                      <mat-label>Identification Document (i.e Passport or ID)</mat-label>
+                      <mat-icon matPrefix class="material-symbols-outlined">info_outline</mat-icon>
+                      <mat-hint align="end">CID returned after selecting and uploading file</mat-hint>
+                      <input type="text" matInput formControlName="identificationDocCID" [(ngModel)]="IdentificationDocCID"
+                        #identificationDocCID>
+                
+                      <button mat-raised-button color="primary" class="p-1">
+                        Select to Upload File
+                        <mat-icon class="material-symbols-outlined">attachment</mat-icon>
+                        <input type="file" (change)="uploadIdentificationDoc($event)" accept="*" />
+                      </button>
+                      <button mat-raised-button color="warn" (click)="deleteFile(identificationDocCID.value)">
+                        <mat-icon class="material-symbols-outlined">delete</mat-icon>
+                        Delete File
+                      </button>
+                    </mat-form-field>
+                    <div class="spacer"></div>
+                
+                    <mat-form-field appearance="fill" class="p-1 form-control">
+                      <mat-label>Employment Contract</mat-label>
+                      <mat-icon matPrefix class="material-symbols-outlined">info_outline</mat-icon>
+                      <mat-hint align="end">CID returned after selecting and uploading file</mat-hint>
+                      <input type="text" matInput formControlName="employmentContractCID" [(ngModel)]="EmploymentContractDocCID"
+                        #employmentContractCID />
+                
+                      <button mat-raised-button color="primary" class="p-1">
+                        Select to Upload File
+                        <mat-icon class="material-symbols-outlined">attachment</mat-icon>
+                        <input type="file" (change)="uploadEmploymentContractDoc($event)" accept="*" />
+                      </button>
+                      <button mat-raised-button color="warn" (click)="deleteFile(employmentContractCID.value)">
+                        <mat-icon class="material-symbols-outlined">delete</mat-icon>
+                        Delete File
+                      </button>
+                    </mat-form-field>
+                    <div class="spacer"></div>
+                
+                  </form>
+
+                  <mat-card-actions>
+                    <button mat-raised-button matStepperPrevious color="tertiary">
+                      <mat-icon class="material-symbols-outlined">first_page</mat-icon>
+                      Back
+                    </button>
+
+
+                    <button color="primary" mat-raised-button matStepperNext (click)="OpenBankAccount()">
+                      <mat-icon class="material-symbols-outlined">enable</mat-icon>
+                      Open Bank Account
+                    </button>
+                  
+                  </mat-card-actions>
+                </mat-step>
+
+                <mat-step [stepControl]="signRentalAgreement">
+                  <form [formGroup]="signRentalAgreement">
+                    <ng-template matStepLabel>
+                      <h4 class="fs-4 fw-bold text-info">
+                        Secure Housing And Sign Rental Agreement
+                      </h4>
+                    </ng-template>
+                    <mat-form-field appearance="fill" class="p-1 form-control">
+                      <mat-label>Bank Account Document CID</mat-label>
+                      <mat-icon matPrefix class="material-symbols-outlined">info_outline</mat-icon>
+                      <mat-hint align="end">CID returned after selecting and uploading file</mat-hint>
+                      <input type="text" matInput formControlName="bankAccountDocCID" [(ngModel)]="BankAccountDocCID"
+                        #bankAccountDocCID>
+                
+                      <button mat-raised-button color="primary" class="p-1">
+                        Select to Upload File
+                        <mat-icon class="material-symbols-outlined">attachment</mat-icon>
+                        <input type="file" (change)="uploadBankAccountDoc($event)" accept="*" />
+                      </button>
+                      <button mat-raised-button color="warn" (click)="deleteFile(bankAccountDocCID.value)">
+                        <mat-icon class="material-symbols-outlined">delete</mat-icon>
+                        Delete File
+                      </button>
+                    </mat-form-field>
+                    <div class="spacer"></div>
+                
+                    <mat-form-field appearance="fill" class="p-1 form-control">
+                      <mat-label>Identification Document (i.e Passport or ID)</mat-label>
+                      <mat-icon matPrefix class="material-symbols-outlined">info_outline</mat-icon>
+                      <mat-hint align="end">CID returned after selecting and uploading file</mat-hint>
+                      <input type="text" matInput formControlName="identificationDocCID" [(ngModel)]="IdentificationDocCID"
+                        #identificationDocCID>
+                
+                      <button mat-raised-button color="primary" class="p-1">
+                        Select to Upload File
+                        <mat-icon class="material-symbols-outlined">attachment</mat-icon>
+                        <input type="file" (change)="uploadIdentificationDoc($event)" accept="*" />
+                      </button>
+                      <button mat-raised-button color="warn" (click)="deleteFile(identificationDocCID.value)">
+                        <mat-icon class="material-symbols-outlined">delete</mat-icon>
+                        Delete File
+                      </button>
+                    </mat-form-field>
+                    <div class="spacer"></div>
+                
+                    <mat-form-field appearance="fill" class="p-1 form-control">
+                      <mat-label>Employment Contract</mat-label>
+                      <mat-icon matPrefix class="material-symbols-outlined">info_outline</mat-icon>
+                      <mat-hint align="end">CID returned after selecting and uploading file</mat-hint>
+                      <input type="text" matInput formControlName="employmentContractCID" [(ngModel)]="EmploymentContractDocCID"
+                        #employmentContractCID />
+                
+                      <button mat-raised-button color="primary" class="p-1">
+                        Select to Upload File
+                        <mat-icon class="material-symbols-outlined">attachment</mat-icon>
+                        <input type="file" (change)="uploadEmploymentContractDoc($event)" accept="*" />
+                      </button>
+                      <button mat-raised-button color="warn" (click)="deleteFile(employmentContractCID.value)">
+                        <mat-icon class="material-symbols-outlined">delete</mat-icon>
+                        Delete File
+                      </button>
+                    </mat-form-field>
+                    <div class="spacer"></div>
+                
+                  </form>
+
+                  <mat-card-actions>
+                    <button mat-raised-button matStepperPrevious color="tertiary">
+                      <mat-icon class="material-symbols-outlined">first_page</mat-icon>
+                      Back
+                    </button>
+
+                    <button color="primary" mat-raised-button matStepperNext (click)="RentalAgreement()">
+                      <mat-icon class="material-symbols-outlined">enable</mat-icon>
+                      Sign Rental Agreement
+                    </button>                    
+                  </mat-card-actions>
+                </mat-step>
+
+                <mat-step>
+                  <ng-template matStepLabel>Done</ng-template>
+                  <p>You are now done.</p>
+                  <div>
+                    <button mat-button matStepperPrevious>Back</button>
+                    <button mat-button (click)="stepper.reset()">Reset</button>
+                  </div>
+                </mat-step>
+              </mat-stepper>
+
+        </mat-card-content>
+    </mat-card>
+</section>
+
+
