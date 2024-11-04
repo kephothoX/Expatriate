@@ -27,13 +27,16 @@ Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To u
 To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
 
 
-To run from [Google IDX](https://idx.google.com) clone both `https://github.com/kephothoX/ThediFrontend` and `https://github.com/kephothoX/ThediServer` and import them directly to your workspace.
+To run from [Google IDX](https://idx.google.com) clone `https://github.com/kephothoX/Expatriate` and import the project directly to your workspace.
 
 ## Truvity SDK
 Use NPM file protocol to install `Truvity.tgz` and make sure the folder is named `Truvity`
 
-## important Links:
+## Important Links:
 - User wallet:  `http://localhost:4201/wallet`
 - Admin wallet: `http://localhost:4201/admin`
 - Pinata File vault `http://localhost:4201/file-vault`
+
+## API Keys
+- Replace `PinataJwt` anf `Truvity` API keys.
 
