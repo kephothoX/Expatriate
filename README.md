@@ -36,6 +36,7 @@ Use NPM file protocol to install `Truvity.tgz` and make sure the folder is named
 - User wallet:  `http://localhost:4201/wallet`
 - Admin wallet: `http://localhost:4201/admin`
 - Pinata File vault `http://localhost:4201/file-vault`
+- Send Bank Account details to user's wallet by clicking `Verify Credential` on admin wallet `VCs` fill out the form with `accountHolder, accountName and accountType` and send. This generates an VC with bank account details and sends it back to a users wallet.
 
 ## API Keys
 - Replace `PinataJwt` and `Truvity` API keys.
