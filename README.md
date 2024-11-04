@@ -38,5 +38,5 @@ Use NPM file protocol to install `Truvity.tgz` and make sure the folder is named
 - Pinata File vault `http://localhost:4201/file-vault`
 
 ## API Keys
-- Replace `PinataJwt` anf `Truvity` API keys.
+- Replace `PinataJwt` and `Truvity` API keys.
 
